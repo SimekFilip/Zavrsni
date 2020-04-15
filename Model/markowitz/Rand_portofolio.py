@@ -5,6 +5,7 @@ import cvxopt as opt
 from cvxopt import blas, solvers
 from markowitz import Rand_weights
 from markowitz import PrviProgram
+from numpy.polynomial import Polynomial as P
 
 
 def random_portfolio(returns1):
@@ -22,6 +23,12 @@ def random_portfolio(returns1):
 
 
 data = PrviProgram.insert_data()
+## NUMBER OF ASSETS
+n_assets = 4
+## NUMBER OF OBSERVATIONS
+n_obs = 1000
+# data = np.random.randn(n_assets, n_obs)
+
 n_portfolios = 500
 means, stds = np.column_stack([
     random_portfolio(data)  # return_vec je data
@@ -54,19 +61,24 @@ def optimal_portfolio(returns1):
     risks1 = [np.sqrt(blas.dot(x, S * x)) for x in portfolios]
     # CALCULATE THE 2ND DEGREE POLYNOMIAL OF THE FRONTIER CURVE
     m1 = np.polyfit(returns1, risks1, 2)
-    x1 = np.sqrt(m1[2] / m1[0])
+    p = P.fit(returns1, risks1, 2)
+    #x1 = np.sqrt(m1[2] / m1[0])
     # CALCULATE THE OPTIMAL PORTFOLIO
-    wt = solvers.qp(opt.matrix(x1 * S), -pbar, G, h, A, b)['x']
-    return np.asarray(wt), returns1, risks1
+    #wt = solvers.qp(opt.matrix(x1 * S), -pbar, G, h, A, b)['x']
+    #return np.asarray(wt), returns1, risks1
+    return returns1, risks1
 
 
-weights, returns, risks = optimal_portfolio(data)  #return_vec
-
-fig = plt.figure()
+# weights, returns, risks = optimal_portfolio(data)  # return_vec
+# optimal_portfolio(data)
+returns, risks = optimal_portfolio(data)
+del data
+# fig = plt.figure()
 plt.plot(stds, means, 'o')
 plt.ylabel('mean')
 plt.xlabel('std')
-plt.plot(risks, returns, 'y-o')
+# plt.plot(risks, returns, 'y-o')
+plt.title("Efficient Frontier - my all data")
 plt.show()
 # py.iplot_mpl(fig, filename='efficient_frontier', strip_style=True)
 
@@ -80,8 +92,8 @@ print(weights)
 print(returns)
 print(risks)
 '''
-'''
 
+'''
 fig = plt.figure()
 plt.plot(stds, means, 'o', markersize=5)
 plt.xlabel('std')
