@@ -3,6 +3,17 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from markowitz import PrviProgram
 
+'''
+Problem koji susrecem je taj sto neke dionice imaju za svaku lambdu pozitivan nagib,
+tj njihov rast je 'siguran' i maksimalan moguci (skalirano na 1)
+U isto vrijeme stdev istih je nula tj minimalna
+Generiranjem portfelja random tezinama dobivamo da najbolji portfelj ima maksimalan ocekivani povrat
+te u isto vrijeme minimalni rizik
+Takav portfelj se sastoji od prethodno navedenih dionica
+
+Spominje se sortiranje dionica prema ocekivanju prinosa
+'''
+
 
 def portfolio_annualised_performance(weights, mean_returns, cov_matrix):
     returns = np.sum(mean_returns * weights) * 252
@@ -30,7 +41,7 @@ def random_portfolios(num_portfolios, mean_returns, cov_matrix, risk_free_rate):
 def display_simulated_ef_with_random(mean_returns, cov_matrix, num_portfolios, risk_free_rate):
     results, weights = random_portfolios(num_portfolios, mean_returns, cov_matrix, risk_free_rate)
 
-    table = pd.DataFrame([[0.998, -0.548, 1.0, 1.0, 1.0, -0.838, -0.308, 0.998, 0.994, -0.926]]) # dodano
+    table = pd.DataFrame([[0.998, -0.548, 1.0, 1.0, 1.0, -0.838, -0.308, 0.998, 0.994, -0.926]])  # dodano
     table.columns = ['AET', 'AFG', 'AFL', 'AGN', 'AIG', 'AIN', 'AIR', 'AIT', 'AJG', 'AJRD'] # dodano
 
     max_sharpe_idx = np.argmax(results[2])
@@ -67,7 +78,7 @@ def display_simulated_ef_with_random(mean_returns, cov_matrix, num_portfolios, r
     plt.xlabel('annualised volatility')
     plt.ylabel('annualised returns')
     plt.legend(labelspacing=0.8)
-    plt.show()
+    # plt.show()
 
 
 def estimate_expected_returns(data):
@@ -87,20 +98,13 @@ print(mean_returns)
 
 # cov_matrix = returns.cov() # izbaceno
 cov_matrix = np.asmatrix(np.cov(data))  # dodano - racunanje matrice kovarijance
+print(cov_matrix)
 
 num_portfolios = 1000  # pocetno 25000
 risk_free_rate = 0.0178  # utjece samo na Sharpe ratio?
 
-# results, weights_record = random_portfolios(num_portfolios, mean_returns, cov_matrix, risk_free_rate)
+results, weights_record = random_portfolios(num_portfolios, mean_returns, cov_matrix, risk_free_rate)
 
-display_simulated_ef_with_random(mean_returns, cov_matrix, num_portfolios, risk_free_rate)
+# display_simulated_ef_with_random(mean_returns, cov_matrix, num_portfolios, risk_free_rate)
 
-'''
-df = data.set_index('date')
-table = df.pivot(columns='ticker')
-# By specifying col[1] in below list comprehension
-# You can select the stock names under multi-level column
-table.columns = [col[1] for col in table.columns]
-table.head()
-'''
-
+exit(0)
